@@ -1,0 +1,5 @@
+
+SALDO_MINIMO        = -5000.0   
+META_INDEPENDENCIA  = 50000.0   
+MESES_MAXIMOS       = 24        
+TAXA_JUROS_DIVIDA   = 0.05     
