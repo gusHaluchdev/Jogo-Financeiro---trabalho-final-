@@ -1,60 +1,30 @@
 import random
 import time
-from rich.console import Console
-from rich.panel   import Panel
-from rich.prompt  import Prompt, FloatPrompt, IntPrompt
-
-console = Console()
-
-
-
-def _pedir_aposta(perfil):
-    """Solicita e valida o valor da aposta."""
-    while True:
-        valor = FloatPrompt.ask(
-            f"[bold]Quanto quer apostar?[/] "
-            f"(saldo: [green]R$ {perfil['saldo']:,.2f}[/]) (R$)"
-        )
-        if valor <= 0:
-            console.print("[red]O valor deve ser maior que zero.[/]")
-        elif valor > perfil["saldo"]:
-            console.print("[red]Saldo insuficiente![/]")
-        else:
-            return valor
-
-
-def _menu_jogar_novamente(jogo_func, perfil):
-    """Pergunta se o jogador quer jogar de novo."""
-    console.print(Panel(
-        "[gold1 bold](1)[/] Jogar novamente\n"
-        "[dim](2)[/] Sair",
-        border_style="dim"
-    ))
-    opcao = Prompt.ask("[bold]Opção[/]", choices=["1", "2"])
-    if opcao == "1":
-        jogo_func(perfil)
-    else:
-        console.print("[dim]Te esperamos na próxima![/]")
-        time.sleep(1.0)
-
 
 
 def casa_de_apostas(perfil):
-    console.print(Panel(
-        f"[bold]Jogue com responsabilidade![/]\n"
-        f"[dim]Proibido para menores de 18 anos.[/]\n\n"
-        f"Saldo disponível: [green bold]R$ {perfil['saldo']:,.2f}[/]\n\n"
-        "[gold1 bold](1)[/] Tigrinho\n"
-        "[gold1 bold](2)[/] Roleta\n"
-        "[gold1 bold](3)[/] Blackjack\n"
-        "[gold1 bold](4)[/] Loteria\n"
-        "[gold1 bold](5)[/] Aposta Esportiva\n"
-        "[dim](6)[/] Sair",
-        title="[bold gold1]🎰 CASA DE APOSTAS[/]",
-        border_style="gold1"
-    ))
+    print("\n" + "=" * 50)
+    print("       BEM-VINDO À CASA DE APOSTAS!")
+    print("      Aqui sua diversão é garantida!")
+    print("=" * 50)
+    print("         Jogue com responsabilidade!")
+    print("       Proibido para menores de 18 anos")
+    print("=" * 50)
+    print(f"  Saldo disponível: R$ {perfil['saldo']:,.2f}")
+    print("\n  Escolha o jogo:")
+    print("  (1) Tigrinho")
+    print("  (2) Roleta")
+    print("  (3) Blackjack")
+    print("  (4) Loteria")
+    print("  (5) Aposta esportiva")
+    print("  (6) Sair")
 
-    escolha = Prompt.ask("[bold]Jogo escolhido[/]", choices=["1","2","3","4","5","6"])
+    while True:
+        escolha = input("\n  Jogo escolhido: ").strip()
+        if escolha in ["1", "2", "3", "4", "5", "6"]:
+            break
+        else:
+            print("Opção inválida. Digite de 1 a 6.")
 
     if escolha == "1":
         tigrinho(perfil)
@@ -67,79 +37,111 @@ def casa_de_apostas(perfil):
     elif escolha == "5":
         jogo_futebol(perfil)
     elif escolha == "6":
-        console.print("[dim]Até a próxima![/]")
+        print("\n  Até a próxima!")
         time.sleep(1.0)
 
 
 def tigrinho(perfil):
-    console.print(Panel(
-        "[bold]🐯 | 🐼 | 🐷 | 🦁 | 🐭 | 🦊[/]\n\n"
-        "3 iguais → [green bold]aposta × 10[/]\n"
-        "2 iguais → [yellow bold]aposta × 2[/]",
-        title="[bold gold1]🐯 TIGRINHO[/]",
-        border_style="gold1"
-    ))
+    print("\n  🐯 TIGRINHO 🐯")
+    print("  [ 🐯 | 🐼 | 🐷 | 🦁 | 🐭 | 🦊 ]")
+    print("  Se você conseguir 3 bichinhos iguais, o valor da aposta é multiplicado por 10" )
+    print("        Se você conseguir 2 bichinhos iguais, o valor da aposta é dobrado")
 
-    valor = _pedir_aposta(perfil)
+    while True:
+        try:
+            valor = float(input(f"\nSeu saldo é de R$ {perfil['saldo']:,.2f} \n Quanto você quer apostar parceiro? R$ "))
+            if valor <= 0:
+                print("  Valor deve ser maior que zero.")
+            elif valor > perfil["saldo"]:
+                print("  Saldo insuficiente!")
+            else:
+                break
+        except ValueError:
+            print("  Digite um número válido.")
+
     perfil["saldo"] -= valor
 
     simbolos = ["🐯", "🐼", "🐷", "🦁", "🐭", "🦊"]
-    console.print("[dim]Girando[/]", end="")
+    print("\n  Girando", end="")
     for _ in range(3):
         time.sleep(0.5)
-        console.print(".", end="")
+        print(".", end="", flush=True)
 
-    s1, s2, s3 = (random.choice(simbolos) for _ in range(3))
+    s1 = random.choice(simbolos)
+    print(f"\n  [ {s1} ]")
+    time.sleep(1.5)
 
-    console.print(f"\n[bold]  [ {s1} ][/]")
-    time.sleep(1.0)
-    console.print(f"[bold]  [ {s1} | {s2} ][/]")
-    time.sleep(1.0)
-    console.print(f"[bold]  [ {s1} | {s2} | {s3} ][/]")
+    s2 = random.choice(simbolos)
+    print(f"  [ {s1} | {s2} ]")
+    time.sleep(1.5)
+
+    s3 = random.choice(simbolos)
+    print(f"  [ {s1} | {s2} | {s3} ]")
     time.sleep(1.5)
 
     if s1 == s2 == s3:
         ganho = valor * 10
         perfil["saldo"] += ganho
-        console.print(Panel(
-            f"[green bold]JACKPOT! 3 iguais!\n+ R$ {ganho:,.2f}[/]\n"
-            f"Saldo: [green bold]R$ {perfil['saldo']:,.2f}[/]",
-            title="[green]🏆 VOCÊ GANHOU![/]", border_style="green"
-        ))
+        print(f"\n  QUEBROU A BANCA! +R$ {ganho:,.2f}")
+        print("Acho que você está com a mão quente!")
     elif s1 == s2 or s2 == s3 or s1 == s3:
         ganho = valor * 2
         perfil["saldo"] += ganho
-        console.print(Panel(
-            f"[yellow bold]2 iguais! Dobrou!\n+ R$ {ganho:,.2f}[/]\n"
-            f"Saldo: [green bold]R$ {perfil['saldo']:,.2f}[/]",
-            title="[yellow]✨ QUASE LÁ![/]", border_style="yellow"
-        ))
+        print(f"\n  DECOLANDO! Você conseguiu 2 iguais! +R$ {ganho:,.2f}")
+        print("Você está entrando no ritmo da vitória")
     else:
-        cor = "green" if perfil["saldo"] >= 0 else "red"
-        console.print(Panel(
-            f"[red bold]Sem combinação. - R$ {valor:,.2f}[/]\n"
-            f"Saldo: [{cor} bold]R$ {perfil['saldo']:,.2f}[/]",
-            title="[red]❌ PERDEU[/]", border_style="red"
-        ))
+        print(f"\n  Você perdeu! -R$ {valor:,.2f}")
+        print("O tigre ainda está segurando seu prêmio!")
 
-    _menu_jogar_novamente(tigrinho, perfil)
+    print(f"  Saldo atual: R$ {perfil['saldo']:,.2f}")
+    print("Vamos continuar? Sinto que você está perto de algo grande.")
+    time.sleep(1.0)
+
+    print("\n  (1) Jogar novamente")
+    print("  (2) Sair")
+
+    while True:
+        opcao = input("\n  Opção: ").strip()
+        if opcao == "1":
+            tigrinho(perfil)
+            break
+        elif opcao == "2":
+            print("\n  Te esperamos na próxima!")
+            time.sleep(1.0)
+            break
+        else:
+            print("  Opção inválida. Digite 1 ou 2.")
+
 
 
 def roleta(perfil):
-    console.print(Panel(
-        "Escolha [red bold]vermelho[/] ou [dim]preto[/].\n"
-        "Acerte → [green bold]aposta × 2[/]",
-        title="[bold gold1]🎡 ROLETA[/]",
-        border_style="gold1"
-    ))
+    print("\n                🎡 ROLETA 🎡")
+    print("     Faça sua escolha entre vermelho ou preto!")
+    print("  Você tem a chance de dobrar o valor da sua aposta!")
 
-    valor = _pedir_aposta(perfil)
-    cor   = Prompt.ask("[bold]Vermelho ou preto?[/]", choices=["vermelho", "preto"])
+    while True:
+        try:
+            valor = float(input(f"\nSeu saldo é de R$ {perfil['saldo']:,.2f} \n Quanto você quer apostar parceiro? R$ "))
+            if valor <= 0:
+                print("  O valor deve ser maior que zero.")
+            elif valor > perfil["saldo"]:
+                print("  Saldo insuficiente!")
+            else:
+                break
+        except ValueError:
+            print("  Digite um número válido.")
 
-    console.print("[dim]A roleta está girando[/]", end="")
+    while True:
+        cor = input("\n  Vermelho ou preto?: ").strip().lower()
+        if cor in ["vermelho", "preto"]:
+            break
+        else:
+            print("  Digite vermelho ou preto.")
+
+    print("\n  A roleta está girando", end="")
     for _ in range(3):
         time.sleep(0.5)
-        console.print(".", end="")
+        print(".", end="", flush=True)
 
     resultado = random.choice(["vermelho", "preto"])
     perfil["saldo"] -= valor
@@ -147,38 +149,52 @@ def roleta(perfil):
     if cor == resultado:
         ganho = valor * 2
         perfil["saldo"] += ganho
-        console.print(Panel(
-            f"Saiu [bold]{resultado}[/]! Você acertou!\n"
-            f"[green bold]+ R$ {ganho:,.2f}[/]\n"
-            f"Saldo: [green bold]R$ {perfil['saldo']:,.2f}[/]",
-            title="[green]🏆 VOCÊ GANHOU![/]", border_style="green"
-        ))
+        print(f"\n  VOCÊ GANHOU! Saiu a cor {resultado}! +R$ {ganho:,.2f}")
+        print("Acho que você está com a mão quente!")
     else:
-        cor_saldo = "green" if perfil["saldo"] >= 0 else "red"
-        console.print(Panel(
-            f"Saiu [bold]{resultado}[/]. Você apostou em {cor}.\n"
-            f"[red bold]- R$ {valor:,.2f}[/]\n"
-            f"Saldo: [{cor_saldo} bold]R$ {perfil['saldo']:,.2f}[/]",
-            title="[red]❌ PERDEU[/]", border_style="red"
-        ))
+        print(f"\n Você perdeu! Saiu a cor {resultado}, -R$ {valor:,.2f}")
+        print("A roleta ainda está segurando seu prêmio!")
 
-    _menu_jogar_novamente(roleta, perfil)
+    print(f"  Saldo atual: R$ {perfil['saldo']:,.2f}")
+    print("Vamos continuar? Sinto que você está perto de algo grande.")
+    time.sleep(1.0)
+
+    print("\n  (1) Jogar novamente")
+    print("  (2) Sair")
+    while True:
+        opcao = input("\n  Opção: ").strip()
+        if opcao == "1":
+            roleta(perfil)
+            break
+        elif opcao == "2":
+            print("\n  Te esperamos na próxima!")
+            time.sleep(1.0)
+            break
+        else:
+            print("  Opção inválida. Digite 1 ou 2.")
 
 
 def blackjack(perfil):
-    console.print(Panel(
-        "Chegue mais perto de [bold]21[/] sem ultrapassar!\n"
-        "Dealer para em 17. Empate → aposta devolvida.",
-        title="[bold gold1]🃏 BLACKJACK[/]",
-        border_style="gold1"
-    ))
+    print("\n                      🃏 BLACKJACK 🃏")
+    print("           Chegue mais perto de 21 sem ultrapassar!")
+    print("  Dealer para em 17, se empatar você recebe o dinheiro de volta.")
 
-    valor = _pedir_aposta(perfil)
+    while True:
+        try:
+            valor = float(input(f"\nSeu saldo é de R$ {perfil['saldo']:,.2f} \n Quanto você quer apostar parceiro? R$ "))
+            if valor <= 0:
+                print("  O valor deve ser maior que zero.")
+            elif valor > perfil["saldo"]:
+                print("  Saldo insuficiente!")
+            else:
+                break
+        except ValueError:
+            print("  Digite um número válido.")
 
-    console.print("[dim]Distribuindo as cartas[/]", end="")  
+    print("\n  O dealer está tirando a carta", end="")
     for _ in range(3):
         time.sleep(0.5)
-        console.print(".", end="")
+        print(".", end="", flush=True)
 
     def sortear_carta():
         return random.randint(1, 10)
@@ -186,187 +202,220 @@ def blackjack(perfil):
     jogador = sortear_carta() + sortear_carta()
     dealer  = sortear_carta() + sortear_carta()
 
-    console.print(f"\n[bold]Sua mão:[/]                [yellow bold]{jogador}[/]")
-    console.print(f"[bold]Carta visível do dealer:[/] [dim]{dealer // 2}[/]")
+    print(f"\n  Sua mão: {jogador}")
+    print(f"  Carta visível do dealer: {dealer // 2}")
 
     while jogador < 21:
-        acao = Prompt.ask(
-            "[bold]Pedir carta[/] (1) ou [bold]parar[/] (0)?",
-            choices=["1", "0"]
-        )
+        acao = input("\n  Pedir carta (1) ou parar (0)? ").strip().lower()
         if acao == "1":
-            console.print("[dim]Sorteando carta[/]", end="")
+            print("\n  Tirando a carta", end="")
             for _ in range(3):
-                time.sleep(0.3)
-                console.print(".", end="")
+                time.sleep(0.5)
+                print(".", end="", flush=True)
             carta = sortear_carta()
             jogador += carta
-            console.print(f"\n[bold]Você recebeu:[/] [yellow]{carta}[/]  Total: [yellow bold]{jogador}[/]")
+            print(f"\n  Você recebeu {carta}. Total: {jogador}")
             if jogador > 21:
-                console.print("[red bold]Passou de 21![/]")
+                print("  Passou de 21! Você perdeu!")
                 break
-        else:
+        elif acao == "0":
             break
+        else:
+            print("  Digite (1) para pedir ou (0) para parar.")
 
     perfil["saldo"] -= valor
-    console.print(f"\n[bold]Mão do dealer:[/] [dim]{dealer}[/]")
+
+    print(f"\n  Mão do dealer: {dealer}")
+    while dealer < 17:
+        dealer += sortear_carta()
+        print(f"  Dealer pediu carta. Total: {dealer}")
+        time.sleep(0.5)
 
     if jogador > 21:
-        # Jogador estourou
-        cor_saldo = "green" if perfil["saldo"] >= 0 else "red"
-        console.print(Panel(
-            f"[red bold]Você passou de 21! - R$ {valor:,.2f}[/]\n"
-            f"Saldo: [{cor_saldo} bold]R$ {perfil['saldo']:,.2f}[/]",
-            title="[red]❌ PERDEU[/]", border_style="red"
-        ))
+        print(f"  -R$ {valor:,.2f}")
+        print("O baralho ainda está segurando seu prêmio!")
     elif dealer > 21:
-        # ✅ BUG CORRIGIDO: dealer estourou → jogador ganha
         ganho = valor * 2
         perfil["saldo"] += ganho
-        console.print(Panel(
-            f"[green bold]Dealer passou de 21! Você ganhou!\n+ R$ {ganho:,.2f}[/]\n"
-            f"Saldo: [green bold]R$ {perfil['saldo']:,.2f}[/]",
-            title="[green]🏆 VOCÊ GANHOU![/]", border_style="green"
-        ))
+        print(f"  Dealer passou de 21! VOCÊ GANHOU! +R$ {ganho:,.2f}")
+        print("Acho que você está com a mão quente!")
     elif jogador > dealer:
         ganho = valor * 2
         perfil["saldo"] += ganho
-        console.print(Panel(
-            f"[green bold]Sua mão ({jogador}) > Dealer ({dealer})!\n+ R$ {ganho:,.2f}[/]\n"
-            f"Saldo: [green bold]R$ {perfil['saldo']:,.2f}[/]",
-            title="[green]🏆 VOCÊ GANHOU![/]", border_style="green"
-        ))
+        print(f"  VOCÊ GANHOU! +R$ {ganho:,.2f}")
+        print("Acho que você está com a mão quente!")
     elif jogador == dealer:
         perfil["saldo"] += valor
-        console.print(Panel(
-            f"[yellow]Empate! ({jogador} vs {dealer})\nAposta devolvida.[/]\n"
-            f"Saldo: [green bold]R$ {perfil['saldo']:,.2f}[/]",
-            title="[yellow]🤝 EMPATE[/]", border_style="yellow"
-        ))
+        print(f"  Empate! Aposta devolvida.")
+        print("Você está entrando no ritmo da vitória")
     else:
-        cor_saldo = "green" if perfil["saldo"] >= 0 else "red"
-        console.print(Panel(
-            f"[red bold]Dealer ({dealer}) > Você ({jogador})! - R$ {valor:,.2f}[/]\n"
-            f"Saldo: [{cor_saldo} bold]R$ {perfil['saldo']:,.2f}[/]",
-            title="[red]❌ DEALER VENCEU[/]", border_style="red"
-        ))
+        print(f"  O Dealer venceu! -R$ {valor:,.2f}")
+        print("O baralho ainda está segurando seu prêmio!")
 
-    _menu_jogar_novamente(blackjack, perfil)
+    print(f"  Saldo atual: R$ {perfil['saldo']:,.2f}")
+    print("Vamos continuar? Sinto que você está perto de algo grande.")
+    time.sleep(1.0)
+
+    print("\n  (1) Jogar novamente")
+    print("  (2) Sair")
+    while True:
+        opcao = input("\n  Opção: ").strip()
+        if opcao == "1":
+            blackjack(perfil)
+            break
+        elif opcao == "2":
+            print("\n  Te esperamos na próxima!")
+            time.sleep(1.0)
+            break
+        else:
+            print("  Opção inválida. Digite 1 ou 2.")
 
 
 def loteria(perfil):
-    console.print(Panel(
-        "Escolha [bold]3 números[/] de 1 a 30.\n\n"
-        "3 acertos → [green bold]aposta × 10[/]\n"
-        "2 acertos → [yellow bold]aposta × 2[/]\n"
-        "1 acerto  → [dim]aposta devolvida[/]",
-        title="[bold gold1]🎟️ LOTERIA[/]",
-        border_style="gold1"
-    ))
+    print("\n                      🎟️ LOTERIA 🎟️")
+    print("                 Escolha 3 números de 1 a 30.")
+    print(" Se acertar os 3 números, o valor da aposta é multiplicado por 10")
+    print(".       Se acertar 2 números, o valor da aposta é dobrado")
+    print(".       Se acertar 1 número, a casa devolve seu dinheiro")
 
-    valor = _pedir_aposta(perfil)
+    while True:
+        try:
+            valor = float(input(f"\nSeu saldo é de R$ {perfil['saldo']:,.2f} \n Quanto você quer apostar parceiro? R$ "))
+            if valor <= 0:
+                print("  O valor deve ser maior que zero.")
+            elif valor > perfil["saldo"]:
+                print("  Saldo insuficiente!")
+            else:
+                break
+        except ValueError:
+            print("  Digite um número válido.")
 
     numeros_jogador = []
-    console.print("[bold]Digite seus 3 números (1–30):[/]")
+    print("\n  Digite seus 3 números, devem estar entre 1 e 30):")
     while len(numeros_jogador) < 3:
         try:
-            n = IntPrompt.ask(f"  Número {len(numeros_jogador) + 1}")
+            n = int(input(f"  Número {len(numeros_jogador) + 1}: "))
             if n < 1 or n > 30:
-                console.print("[red]Digite um número entre 1 e 30.[/]")
+                print("  Digite um número entre 1 e 30.")
             elif n in numeros_jogador:
-                console.print("[red]Número já escolhido![/]")
+                print("  Número já escolhido!")
             else:
                 numeros_jogador.append(n)
-        except Exception:
-            console.print("[red]Digite um número válido.[/]")
+        except ValueError:
+            print("  Digite um número válido.")
 
-    console.print("[dim]Sorteando os números[/]", end="")
+    print("\n  Sorteando os números", end="")
     for _ in range(3):
         time.sleep(0.5)
-        console.print(".", end="")
+        print(".", end="", flush=True)
 
     sorteados = random.sample(range(1, 31), 3)
-    acertos   = len(set(numeros_jogador) & set(sorteados))
+    acertos = len(set(numeros_jogador) & set(sorteados))
 
-    console.print("\n[bold]Números sorteados:[/]")
+    print(f"\n  Números sorteados:")
+    time.sleep(1)
     for numero in sorteados:
-        time.sleep(0.8)
-        console.print(f"  [yellow bold]{numero}[/]")
-
-    console.print(f"\n[bold]Seus números:[/] {numeros_jogador}")
-    console.print(f"[bold]Acertos:[/] [yellow bold]{acertos} acerto(s)[/]")  
+        time.sleep(1)
+        print(f"  {numero}", flush=True)
+    time.sleep(1)
+    print(f"  Seus números: {numeros_jogador}")
+    print(f"  Você teve {acertos} acertos")
 
     perfil["saldo"] -= valor
 
     if acertos == 3:
         ganho = valor * 10
         perfil["saldo"] += ganho
-        console.print(Panel(
-            f"[green bold]3 acertos! Jackpot!\n+ R$ {ganho:,.2f}[/]\n"
-            f"Saldo: [green bold]R$ {perfil['saldo']:,.2f}[/]",
-            title="[green]🏆 VOCÊ GANHOU![/]", border_style="green"
-        ))
+        print(f"\n  VOCÊ GANHOU! Acertou os 3 números! +R$ {ganho:,.2f}")
+        print("Acho que você está com a mão quente!")
     elif acertos == 2:
         ganho = valor * 2
         perfil["saldo"] += ganho
-        console.print(Panel(
-            f"[yellow bold]2 acertos! Dobrou!\n+ R$ {ganho:,.2f}[/]\n"
-            f"Saldo: [green bold]R$ {perfil['saldo']:,.2f}[/]",
-            title="[yellow]✨ QUASE LÁ![/]", border_style="yellow"
-        ))
+        print(f"\n  DECOLANDO! Acertou 2 números! +R$ {ganho:,.2f}")
+        print("Você está entrando no ritmo da vitória")
     elif acertos == 1:
         perfil["saldo"] += valor
-        console.print(Panel(
-            f"[dim]1 acerto. Aposta devolvida.[/]\n"
-            f"Saldo: [green bold]R$ {perfil['saldo']:,.2f}[/]",
-            title="[yellow]↩️ DEVOLVIDO[/]", border_style="yellow"
-        ))
+        print(f"\n  Você acertou 1 número! Aposta devolvida.")
+        print("Você está entrando no ritmo da vitória")
     else:
-        cor_saldo = "green" if perfil["saldo"] >= 0 else "red"
-        console.print(Panel(
-            f"[red bold]Nenhum acerto. - R$ {valor:,.2f}[/]\n"
-            f"Saldo: [{cor_saldo} bold]R$ {perfil['saldo']:,.2f}[/]",
-            title="[red]❌ PERDEU[/]", border_style="red"
-        ))
+        print(f"\n  Nenhum número acertado! -R$ {valor:,.2f}")
+        print("O prêmio escapou por pouco.")
 
-    _menu_jogar_novamente(loteria, perfil)
+
+    print(f"  Saldo atual: R$ {perfil['saldo']:,.2f}")
+    print("Vamos continuar? Sinto que você está perto de algo grande.")
+    time.sleep(1.0)
+
+    print("\n  (1) Jogar novamente")
+    print("  (2) Sair")
+    while True:
+        opcao = input("\n  Opção: ").strip()
+        if opcao == "1":
+            loteria(perfil)
+            break
+        elif opcao == "2":
+            print("\n  Te esperamos na próxima!")
+            time.sleep(1.0)
+            break
+        else:
+            print("  Opção inválida. Digite 1 ou 2.")
 
 
 def jogo_futebol(perfil):
+    print("\n  ⚽️ APOSTA ESPORTIVA ⚽️")
+    print("  Escolha o time que você acha que vai ganhar o Brasileirão:")
+    print("  (1) Flamengo      — favorito  [40% de chance]")
+    print("  (2) Palmeiras     — bom       [25% de chance]")
+    print("  (3) São Paulo     — médio     [15% de chance]")
+    print("  (4) Corinthians   — azarão    [12% de chance]")
+    print("  (5) Remo          — sortudo   [8% de chance]")
+
+    while True:
+        try:
+            valor = float(input(f"\nSeu saldo é de R$ {perfil['saldo']:,.2f} \n Quanto você quer apostar parceiro? R$ "))
+            if valor <= 0:
+                print("  O valor deve ser maior que zero.")
+            elif valor > perfil["saldo"]:
+                print("  Saldo insuficiente!")
+            else:
+                break
+        except ValueError:
+            print("  Digite um número válido.")
+
+    while True:
+        escolha = input("\n  Qual time você escolhe: ").strip()
+        if escolha in ["1", "2", "3", "4", "5"]:
+            break
+        else:
+            print("  Digite um número de 1 a 5.")
+
     times = {
-        "1": {"nome": "Flamengo",    "chance": 40, "multiplicador": 2},
-        "2": {"nome": "Palmeiras",   "chance": 25, "multiplicador": 3},
-        "3": {"nome": "São Paulo",   "chance": 15, "multiplicador": 5},
-        "4": {"nome": "Corinthians", "chance": 12, "multiplicador": 7},
-        "5": {"nome": "Remo",        "chance": 8,  "multiplicador": 10},
+        "1": {"nome": "Flamengo", "chance": 40, "multiplicador": 2},
+        "2": {"nome": "Palmeiras",    "chance": 25, "multiplicador": 3},
+        "3": {"nome": "São Paulo",  "chance": 15, "multiplicador": 5},
+        "4": {"nome": "Corinthians",    "chance": 12, "multiplicador": 7},
+        "5": {"nome": "Remo",  "chance": 8,  "multiplicador": 10}
     }
 
-    console.print(Panel(
-        "[bold](1)[/] Flamengo    — favorito   [dim][40% | ×2][/]\n"
-        "[bold](2)[/] Palmeiras   — bom        [dim][25% | ×3][/]\n"
-        "[bold](3)[/] São Paulo   — médio      [dim][15% | ×5][/]\n"
-        "[bold](4)[/] Corinthians — azarão     [dim][12% | ×7][/]\n"
-        "[bold](5)[/] Remo        — sortudo    [dim][8%  | ×10][/]",
-        title="[bold gold1]⚽ APOSTA ESPORTIVA — BRASILEIRÃO 2026[/]",
-        border_style="gold1"
-    ))
-
-    valor      = _pedir_aposta(perfil)
-    escolha    = Prompt.ask("[bold]Qual time você escolhe?[/]", choices=list(times.keys()))
-    escolhido  = times[escolha]
+    escolhido = times[escolha]
     times_lista = [t["nome"] for t in times.values()]
+    perfil["saldo"] -= valor
 
-    console.print(f"\n[bold]Seu time:[/] [yellow bold]{escolhido['nome']}[/]")
-    console.print("[dim]Começou o campeonato...[/]")
+    print(f"\n  Seu time escolhido foi o {escolhido['nome']}")
+    print("  Começou o campeonato...")
     time.sleep(0.5)
-    console.print(f"[dim]{random.choice(times_lista)} saiu na frente.[/]")
+    inicio_campeonato = random.choice(times_lista)
+    print(f"O {inicio_campeonato} saiu na frente.")
     time.sleep(1.5)
-    console.print("[dim]Fim da primeira fase...[/]")
-    console.print(f"[dim]{random.choice(times_lista)} assume a liderança.[/]")
+    print("  Fim da primeira fase...")
+    meio_campeonato = random.choice(times_lista)
+    print(f"O {meio_campeonato} assume a liderança.")
     time.sleep(1.5)
-    console.print("[dim]Chegando no final do campeonato...[/]")
-    console.print(f"[dim]{random.choice(times_lista)} está cada vez mais perto do título.[/]")
-    time.sleep(2.0)
+    print("  Estamos chegando no final do campeonato...")
+    fim_campeonato = random.choice(times_lista)
+    print(f"{fim_campeonato} está cada vez mais perto do título.")
+    time.sleep(2)
+    
 
     vencedor = random.choices(
         list(times.values()),
@@ -374,23 +423,33 @@ def jogo_futebol(perfil):
         k=1
     )[0]
 
-    console.print(f"\n[bold yellow]🏆 {vencedor['nome']} é o CAMPEÃO DO BRASILEIRÃO 2026![/]")
-    perfil["saldo"] -= valor
+    print(f"  O {vencedor['nome']} é o campeão do Brasileirão 2026!")
 
     if escolhido["nome"] == vencedor["nome"]:
         ganho = valor * escolhido["multiplicador"]
         perfil["saldo"] += ganho
-        console.print(Panel(
-            f"[green bold]Seu time ganhou! ×{escolhido['multiplicador']}\n+ R$ {ganho:,.2f}[/]\n"
-            f"Saldo: [green bold]R$ {perfil['saldo']:,.2f}[/]",
-            title="[green]🏆 VOCÊ GANHOU![/]", border_style="green"
-        ))
-    else:
-        cor_saldo = "green" if perfil["saldo"] >= 0 else "red"
-        console.print(Panel(
-            f"[red bold]{escolhido['nome']} não ganhou. - R$ {valor:,.2f}[/]\n"
-            f"Saldo: [{cor_saldo} bold]R$ {perfil['saldo']:,.2f}[/]",
-            title="[red]❌ PERDEU[/]", border_style="red"
-        ))
+        print(f"\n  VOCÊ GANHOU! +R$ {ganho:,.2f} ({escolhido['multiplicador']}x)")
+        print("Acho que você está com a mão quente!")
 
-    _menu_jogar_novamente(jogo_futebol, perfil)
+    else:
+        print(f"\n  Você perdeu! -R$ {valor:,.2f}")
+        print("Seu próximo resultado pode mudar tudo!")
+
+
+    print(f"  Saldo atual: R$ {perfil['saldo']:,.2f}")
+    print("Vamos continuar? Sinto que você está perto de algo grande.")
+    time.sleep(1.0)
+
+    print("\n  (1) Jogar novamente")
+    print("  (2) Sair")
+    while True:
+        opcao = input("\n  Opção: ").strip()
+        if opcao == "1":
+            jogo_futebol(perfil)
+            break
+        elif opcao == "2":
+            print("\n  Te esperamos na próxima!")
+            time.sleep(1.0)
+            break
+        else:
+            print("  Opção inválida. Digite 1 ou 2.")
