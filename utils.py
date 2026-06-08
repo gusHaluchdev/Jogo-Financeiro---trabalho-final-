@@ -1,5 +1,5 @@
 from constantes import SALDO_MINIMO, META_INDEPENDENCIA, MESES_MAXIMOS, TAXA_JUROS_DIVIDA
-from relatorio import exibir_relatorio_final, salvar_relatorio_json
+from relatorio import exibir_relatorio_final, salvar_relatorio_json, salvar_relatorio_txt
 import time
 
 def validar_entrada_numerica(mensagem, minimo=None, maximo=None):
@@ -131,6 +131,7 @@ def encerrar_jogo(perfil):
 
     exibir_relatorio_final(perfil)
     salvar_relatorio_json(perfil)
+    salvar_relatorio_txt(perfil)
 
     print("\n  Relatório salvo com sucesso!")
     print("  Até a próxima!")
